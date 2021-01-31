@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huihui.aligo.mapper.MessageRecordMapper">
+
+    <select id="getRecordById" resultType="com.huihui.aligo.model.MessageRecord">
+        select *
+        from t_message_record
+        where id = #{id}
+    </select>
+
+    <select id="getRecordByMessageId" resultType="com.huihui.aligo.model.MessageRecord">
+        select *
+        from t_message_record
+        where message_id = #{messageId}
+    </select>
+
+    <insert id="insert" parameterType="com.huihui.aligo.model.MessageRecord">
+        insert into t_message_record
+        (
+         id,
+         class_name,
+         method_name,
+         message_id,
+         message,
+         created_time,
+         updated_time,
+         result,
+         execute_count,
+         execute_threshold
+        )
+        values
+        (
+          #{id},
+          #{className},
+          #{methodName},
+          #{messageId},
+          #{message},
+          #{createdTime},
+          #{updatedTime},
+          #{result},
+          #{executeCount},
+          #{executeThreshold}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.huihui.aligo.model.MessageRecord">
+        update t_message_record
+        set class_name = #{className},
+        method_name = #{methodName},
+        message_id = #{messageId},
+        message = #{message},
+        result = #{result},
+        execute_count = #{executeCount},
+        execute_threshold = #{executeThreshold},
+        updated_time = now()
+        where id = #{id}
+    </update>
+
+    <select id="searchFailRecords" resultType="com.huihui.aligo.model.MessageRecord">
+        select *
+        from t_message_record
+        where result = 'FAIL'
+        and execute_count <![CDATA[ < ]]> execute_threshold
+    </select>
+
+</mapper>

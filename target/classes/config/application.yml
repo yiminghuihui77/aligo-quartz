@@ -1,0 +1,41 @@
+server:
+  port: 8899
+
+spring:
+  application:
+    name: aligo-quartz
+  datasource:
+    druid:
+      name: mysql
+      url: jdbc:mysql://localhost:3306/aligo
+      username: root
+      password: ymh96122
+      driver-class-name: com.mysql.jdbc.Driver
+      max-active: 100
+      initial-size: 1
+      min-idle: 1
+      max-wait: 60000
+  #quartz
+  quartz:
+    #quartz的数据存储方式，默认memory，可选jdbc
+    job-store-type: memory
+    #当以jdbc方式存储数据时，可以配置下面两个配置，指定每次启动都重新创建表（若下面两个不配置，需要提前建好quartz相关的表）
+#    jdbc:
+#      initialize-schema: always
+#      schema: schema/tables.sql
+
+
+mybatis:
+  configuration:
+    #数据表updated_time字段映射成updatedTime属性
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.huihui.aligo.model
+
+
+
+
+
+
+
+
