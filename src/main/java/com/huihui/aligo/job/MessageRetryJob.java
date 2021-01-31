@@ -52,7 +52,6 @@ public class MessageRetryJob extends QuartzJobBean {
                 LOGGER.error( "消息重试失败..." );
             }
 
-
         } );
     }
 }
