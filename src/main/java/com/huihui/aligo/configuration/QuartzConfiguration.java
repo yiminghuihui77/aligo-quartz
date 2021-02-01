@@ -5,7 +5,6 @@ import com.huihui.aligo.job.ScheduleIncreaseJob;
 import com.huihui.aligo.job.ScheduleSayHelloJob;
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
 
@@ -15,7 +14,7 @@ import java.util.Date;
  * @author minghui.y
  * @create 2021-01-16 1:22 下午
  **/
-@Configuration
+//@Configuration
 public class QuartzConfiguration {
 
     /**********ScheduleSayHelloJob的配置****************/

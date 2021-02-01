@@ -29,7 +29,7 @@ import java.util.List;
  * @author minghui.y
  * @create 2021-01-30 4:55 下午
  **/
-@Component
+//@Component
 @Aspect
 public class MessageRecorderAspect {
 
