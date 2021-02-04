@@ -31,7 +31,7 @@ public class MessageRetryJob extends QuartzJobBean {
 
     @Override
     protected void executeInternal( JobExecutionContext jobExecutionContext ) throws JobExecutionException {
-        //查询需要重试的消费记录
+        //查询需要重试的消费记录：执行次数 < 执行阈值
         List<MessageRecord> messageRecords = messageRecordMapper.searchFailRecords();
 
         messageRecords.forEach( record -> {
@@ -45,6 +45,7 @@ public class MessageRetryJob extends QuartzJobBean {
                 LOGGER.info( "消息重试中.." );
                 Class<?> clazz = Class.forName( className );
                 Method method = clazz.getDeclaredMethod( methodName, MessageBody.class );
+                //反射重试：对象实例需要从SpringIOC中获取，因为其可能注入了其他属性
                 method.invoke( SpringContextUtil.getBean( clazz ), JSONObject.parseObject( message, MessageBody.class ) );
 
             } catch (Exception e) {

@@ -15,7 +15,6 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
@@ -51,8 +50,10 @@ public class MessageRecorderAspect {
         Class<?> clazz = point.getTarget().getClass();
         String methodName = point.getSignature().getName();
         Class<?>[] paramsType = ((MethodSignature) point.getSignature()).getParameterTypes();
-        List<Object> args = Arrays.asList(point.getArgs());
         Method method = clazz.getMethod( methodName, paramsType );
+        List<Object> args = Arrays.asList(point.getArgs());
+        //获取消息体
+        MessageBody messageBody = (MessageBody) args.get( 0 );
 
         LOGGER.error( "消息异常处理，方法名称：{}, 参数：{}", methodName, args );
 
@@ -63,7 +64,6 @@ public class MessageRecorderAspect {
         String emailAddress = messageRecorder.emailAddress();
         //方法的信息
         String className = clazz.getTypeName();
-        MessageBody messageBody = (MessageBody) args.get( 0 );
 
         //根据messageId查询消费记录
         MessageRecord exitRecord = messageRecordMapper.getRecordByMessageId( messageBody.getMessageId() );
@@ -86,8 +86,6 @@ public class MessageRecorderAspect {
             messageRecordMapper.update( exitRecord );
         }
 
-
-
     }
 
     /**
@@ -101,12 +99,13 @@ public class MessageRecorderAspect {
         Class<?>[] paramsType = ((MethodSignature) proceedingJoinPoint.getSignature()).getParameterTypes();
         Method method = clazz.getMethod( methodName, paramsType );
         MessageRecorder messageRecorder = method.getDeclaredAnnotation( MessageRecorder.class );
+        //这里要求消费方法只有一个参数，即消息体（并且所有消息体的类一致）
         MessageBody messageBody = (MessageBody) proceedingJoinPoint.getArgs()[0];
 
         //消费消息前置处理
         LOGGER.info( "消息前置处理..., 方法名称：{}, 参数：{}", method.getName(), messageBody);
 
-        //执行消费逻辑
+        //执行消费逻辑（如果消息处理方法对异常的处理不是抛出，而是try-catch，则需要对方法的返回值进行判断是否消费成功！）
         proceedingJoinPoint.proceed();
 
         //消费消息后置处理
@@ -115,7 +114,7 @@ public class MessageRecorderAspect {
         //根据messageId查询消费记录是否存在
         MessageRecord exitRecord = messageRecordMapper.getRecordByMessageId( messageBody.getMessageId() );
         if (exitRecord == null) {
-            //来自kafka消息调用
+            //来自kafka的消息消费
             Integer retryTimes = messageRecorder.retryTimes();
             boolean emailAlarm = messageRecorder.emailAlarm();
             String emailAddress = messageRecorder.emailAddress();

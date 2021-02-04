@@ -4,6 +4,7 @@ import com.huihui.aligo.job.MessageRetryJob;
 import com.huihui.aligo.job.ScheduleIncreaseJob;
 import com.huihui.aligo.job.ScheduleSayHelloJob;
 import org.quartz.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
@@ -16,6 +17,9 @@ import java.util.Date;
  **/
 //@Configuration
 public class QuartzConfiguration {
+
+    @Value( "${retry.cron}" )
+    private String retryCron;
 
     /**********ScheduleSayHelloJob的配置****************/
 
@@ -84,7 +88,8 @@ public class QuartzConfiguration {
                 .withIdentity( "messageRetry trigger", "messageRetry Trigger Group" )
                 .withDescription( "消息重试trigger" )
                 .forJob( messageRetryJobDetail() )
-                .withSchedule( CronScheduleBuilder.cronSchedule( "0 */2 * * * ?" ) )
+                //0 */2 * * * ?
+                .withSchedule( CronScheduleBuilder.cronSchedule( retryCron ) )
                 .build();
     }
 
